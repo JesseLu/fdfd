@@ -5,7 +5,32 @@
 \author{Jesse Lu}
 \begin{document}
 \maketitle
-\section{Without a preconditioner}
+\tableofcontents
+\section{The algorithm}
+The algorithm attempts to solve $Ax = b$,
+    where the matrix $A$ is indefinite.
+The algorithm accepts as inputs
+    \begin{enumerate}
+    \item a method to multiply a vector by $A$,
+    \item a method to multiply a vector by $A^T$ 
+        (note that this is the transpose of $A$, 
+        \emph{not} its conjugate-transpose), and
+    \item the vector $b$.
+    \end{enumerate}
+
+The algorithm begins by initializing the following variables,
+    \begin{subequations}\begin{align}
+    r_0 &= b - Ax_0 \\
+    \hat{r_0} &= b - A^T \hat{x_0} \\
+    p_0 &= r_0 \\
+    \hat{p_0} &= \hat{r_0}.
+    \end{align}\end{subequations}
+    \begin{subequations}\begin{align}
+    \end{align}\end{subequations}
+
+
+\appendix
+\section{Reference algorithm: From C. T. Kelley}
 Found in section 3.6.1 of \cite{kelley}.
 Initialize as follows:
 \begin{equation}
@@ -23,7 +48,7 @@ Repeat the following until a termination condition
     r &= r - \alpha v, \hat{r} = \hat{r} - \alpha A^T \hat{p}.
     \end{align}\end{subequations}
 
-\section{From Wikipedia}
+\section{Reference algorithm: From Wikipedia}
 First, choose initial vectors $x_0$, $x_0^\ast$, and $b^\ast$.
 Initialize using
     \begin{subequations}\begin{align}

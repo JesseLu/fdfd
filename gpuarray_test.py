@@ -4,25 +4,21 @@ from pycuda.compiler import SourceModule
 import pycuda.gpuarray as ga
 import numpy as np
 import my_traverse
+from jinja2 import Environment, PackageLoader
 
-# # x = ga.zeros((2, 3, 4), np.dtype([('x', np.complex64), ('y', np.complex64)]))
-# x = ga.zeros((2, 3, 4), np.dtype(np.complex64))
-# y = x + (1 + 1j)
-# print y.conj().get()
-shape = (2, 3, 4)
+shape = (1, 1, 10)
+env = Environment(loader=PackageLoader(__name__, 'templates'))
+code = env.get_template('d2.cu')
 src = my_traverse.fd_kernel(  'testfunc', \
-                        'cuFloatComplex', \
-                        ('Ey',), \
+                        'float', \
+                        ('u',), \
                         shape, \
-                        """
-                        Ey(0,0,0) = make_cuFloatComplex(i, j);
-                        """)
+                        code.render(zzm1=shape[2]-1))
 print src
 mod = SourceModule(src)
 E_update = mod.get_function('testfunc')
-Ex = ga.zeros(shape, np.complex64)
-Ey = ga.zeros(shape, np.complex64)
-E_update(Ey.gpudata, block=shape[::-1], grid=(1,1))
-print Ey.get()
-# print Ey.get()
-print ga.dot(Ex, Ey)
+u = ga.zeros(shape, np.float32)
+u.set(np.arange(shape[2]).astype(np.float32))
+
+E_update(u.gpudata, block=shape[::-1], grid=(1,1))
+print u.get()

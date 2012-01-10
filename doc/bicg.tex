@@ -1,14 +1,31 @@
 \documentclass{article}
+\usepackage{amsmath}
 \title{Notes on the Bi-Conjugate Gradient Method}
 \author{Jesse Lu}
 \begin{document}
 \maketitle
 \section{Without a preconditioner}
-Found in section 3.6.1 of \cite{kelley}
+Found in section 3.6.1 of \cite{kelley}.
+Initialize as follows:
+\begin{equation}
+r = b - Ax, \hat{r} = r, \rho_0 = 1, \hat{p} = p = 0, k = 0.
+\end{equation}
+Repeat the following until a termination condition 
+    such as $\|r\|_2 < \epsilon \|b\|_2$ is satisfied,
+    \begin{subequations}\begin{align}
+    k &= k + 1 \\
+    \rho_k &= \hat{r}^T r, \beta = \rho_k / \rho_{k-1} \\
+    p &= r + \beta p, \hat{p} = \hat{r} + \beta \hat{p} \\
+    v &= Ap \\
+    \alpha &= \rho_k / (\hat{p}^T v) \\
+    x &= x + \alpha p \\
+    r &= r - \alpha v, \hat{r} = \hat{r} - \alpha A^T \hat{p}.
+    \end{align}\end{subequations}
 
-\begin{thebibliography}
-\bibitem[kelley] C. T. Kelley, 
-    ``Iterative Methods for LInear and Nonlinear Equations'', 
+
+\begin{thebibliography}{99}
+\bibitem{kelley} C. T. Kelley, 
+    ``Iterative Methods for Linear and Nonlinear Equations'', 
     SIAM (1995).
 \end{thebibliography}
 \end{document}

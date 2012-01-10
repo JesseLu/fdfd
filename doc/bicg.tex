@@ -24,10 +24,38 @@ Repeat the following until a termination condition
     \end{align}\end{subequations}
 
 \section{From Wikipedia}
-
+First, choose initial vectors $x_0$, $x_0^\ast$, and $b^\ast$.
+Initialize using
     \begin{subequations}\begin{align}
-
+    r_0 &= b - Ax_0 \\
+    r_0^\ast &= b^\ast - x_0^\ast A \\
+    p_0 &= r_0 \\
+    p_0^\ast &= r_0^\ast.
     \end{align}\end{subequations}
+Then loop over the following for $k = 0, 1, \ldots$
+    \begin{subequations}\begin{align}
+    \alpha_k &= r_k^\ast r_k / p_k^\ast p_k \\
+    x_{k+1} &= x_k + \alpha_k p_k \\
+    x_{k+1}^\ast &= x_k^\ast + \overline{\alpha_k} p_k^\ast \\
+    r_{k+1} &= r_k - \alpha_k A p_k \\
+    r_{k+1}^\ast &= r_k^\ast - \overline{\alpha_k} p_k^\ast A \\
+    \beta_k &= r_{k+1}^\ast r_{k+1} / r_k^\ast r_k \\
+    p_{k+1} &= r_{k+1} + \beta_k p_k \\
+    p_{k+1}^\ast &= r_{k+1}^\ast + \overline{\beta_k} p_k^\ast.
+    \end{align}\end{subequations}
+
+The residuals $r_k$ and $r_k^\ast$ satisfy
+    \begin{subequations}\begin{align}
+    r_k &= b - A x_k \\
+    r_k^\ast &= b^\ast - x_k^\ast A,
+    \end{align}\end{subequations}
+    where $x_k$ and $x_k^\ast$ are the approximate solutions to
+    \begin{subequations}\begin{align}
+    Ax &= b \\
+    x^\ast A &= b^\ast.
+    \end{align}\end{subequations}
+
+
 
 \begin{thebibliography}{99}
 \bibitem{kelley} C. T. Kelley, 

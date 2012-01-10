@@ -9,9 +9,9 @@ def fd_kernel(function_name, cuda_type, fields, shape, source):
     src_update = env.get_template('update.cu')
 
     src = src_macros.render() + \
-        src_update.render(  function_name='E_update', \
+        src_update.render(  function_name=function_name, \
                             dims=shape, \
                             cuda_type=cuda_type, \
-                            fields=('Ex', 'Ey', 'Ez'), \
+                            fields=fields, \
                             code=source)
     return src

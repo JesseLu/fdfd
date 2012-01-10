@@ -1,3 +1,5 @@
+#include <cuComplex.h>
+
 // These macros redefine the CUDA blocks and grids to be row-major,
 // instead of column major.
 

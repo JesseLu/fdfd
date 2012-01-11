@@ -7,7 +7,7 @@ def solve2(multA, multAT, b, b_star, x, x_star, eps=1e-6, max_iters=100):
     """
 
     rho = np.zeros(max_iters).astype(np.complex128)
-    err = np.zeros_like(rho)
+    err = np.zeros(max_iters).astype(np.float64)
 
     r = b - multA(x)
     r_star = b_star - multAT(x_star)
@@ -15,11 +15,12 @@ def solve2(multA, multAT, b, b_star, x, x_star, eps=1e-6, max_iters=100):
     p_star = r_star
 
     term_val = eps * np.linalg.norm(b)
-    print term_val
+    print 'Termination error value:', term_val
     for k in range(max_iters):
         err[k] = np.linalg.norm(r)
         if err[k] < term_val:
             return x, err[:k+1]
+        
         rho[k] = np.dot(r_star, r)
         alpha = rho[k] / np.dot(p_star, multA(p))
 
@@ -27,12 +28,12 @@ def solve2(multA, multAT, b, b_star, x, x_star, eps=1e-6, max_iters=100):
         x_star = x_star + alpha * p_star
 
         r = r - alpha * multA(p)
-        r_star = r_star - np.conj(alpha) * multAT(p_star)
+        r_star = r_star - alpha * multAT(p_star)
 
         beta = np.dot(r_star, r) / rho[k]
 
         p = r + beta * p
-        p_star = r_star + np.conj(beta) * p_star
+        p_star = r_star + beta * p_star
 
     return x, err 
 

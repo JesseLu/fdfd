@@ -21,11 +21,22 @@ The algorithm accepts as inputs
 The algorithm begins by initializing the following variables,
     \begin{subequations}\begin{align}
     r_0 &= b - Ax_0 \\
-    \hat{r_0} &= b - A^T \hat{x_0} \\
+    \hat{r}_0 &= b - A^T \hat{x}_0 \\
     p_0 &= r_0 \\
-    \hat{p_0} &= \hat{r_0}.
+    \hat{p}_0 &= \hat{r}_0.
     \end{align}\end{subequations}
     \begin{subequations}\begin{align}
+    \end{align}\end{subequations}
+Then loop over the following for $k = 0, 1, \ldots$
+    \begin{subequations}\begin{align}
+    \alpha_k &= \hat{r}_k^T r_k / \hat{p}_k^T A p_k \\
+    x_{k+1} &= x_k + \alpha_k p_k \\
+    \hat{x}_{k+1} &= \hat{x}_k + {\alpha_k} \hat{p}_k \\
+    r_{k+1} &= r_k - \alpha_k A p_k \\
+    \hat{r}_{k+1} &= \hat{r}_k - {\alpha_k} A^T \hat{p}_k \\
+    \beta_k &= \hat{r}_{k+1}^T r_{k+1} / \hat{r}_k^T r_k \\
+    p_{k+1} &= r_{k+1} + \beta_k p_k \\
+    \hat{p}_{k+1} &= \hat{r}_{k+1} + {\beta_k} \hat{p}_k.
     \end{align}\end{subequations}
 
 

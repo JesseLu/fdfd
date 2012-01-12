@@ -6,9 +6,10 @@ from jinja2 import Environment, PackageLoader
 def fd_kernel(function_name, cuda_type, fields, shape, source):
     env = Environment(loader=PackageLoader(__name__, 'templates'))
     src_macros = env.get_template('my_cuda_macros.cu')
+    src_complex = env.get_template('my_complex_macros.cu')
     src_update = env.get_template('update.cu')
 
-    src = src_macros.render() + \
+    src = src_macros.render() + src_complex.render() + \
         src_update.render(  function_name=function_name, \
                             dims=shape, \
                             cuda_type=cuda_type, \

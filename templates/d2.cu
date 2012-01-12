@@ -1,3 +1,4 @@
+        /*
         float u_next, u_prev;
         // Implement the second derivative function.
         if (k == 0) { // First cell must wrap-around.
@@ -13,4 +14,6 @@
             u_next = u(0,0,1);
         }
         u(0,0,0) = u_next - (2 + {{ w2 }}) * u(0,0,0) + u_prev;
+        */
+        u(0,0,0) = pycuda::complex<float>(-3, -4) *  pycuda::complex<float>(0, 1);
 

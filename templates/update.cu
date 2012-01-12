@@ -26,7 +26,7 @@ __global__ void {{ function_name }}(
     {{field}} += MY_OFFSET(i,j,k);
     {%- endfor %} 
 
-    for (; i < {{dims[0] }} ; i += txx) {
+    for (; i < {{ dims[0] }} ; i += txx) {
         // Begin user-defined loop code.
         {{ code }}
         // End user-defined loop code.

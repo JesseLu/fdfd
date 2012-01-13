@@ -7,6 +7,7 @@ import my_traverse
 from jinja2 import Environment, PackageLoader, Template
 from solvers import bicg
 import stretched_coords
+import matplotlib.pyplot as plt
 
 shape = (1, 1, 100)
 omega = 0.3;
@@ -46,7 +47,7 @@ mod = SourceModule(src)
 d2 = mod.get_function('testfunc')
 u = ga.zeros(shape, np.complex128)
 u0 = np.zeros(shape).astype(np.complex128)
-u0[0,0,shape[2]/2] = 0 + 1j;
+u0[0,0,shape[2]/2] = 1 + 0j;
 u.set(u0)
 v = ga.zeros_like(u)
 
@@ -74,3 +75,6 @@ def multAT(u):
 
 x, err = bicg.solve1(multA, multAT, u, v, v*1, max_iters=1000)
 print err.size, 'iterations ending with', err[-3:]
+y = x.get()
+plt.plot(y.flatten())
+plt.show()

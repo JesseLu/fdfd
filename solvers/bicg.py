@@ -1,4 +1,4 @@
-# import pycuda.gpuarray as ga
+import pycuda.gpuarray as ga
 import numpy as np
 
 def solve2(multA, multAT, b, b_star, x, x_star, eps=1e-6, max_iters=100):
@@ -37,35 +37,41 @@ def solve2(multA, multAT, b, b_star, x, x_star, eps=1e-6, max_iters=100):
 
     return x, err 
 
-
-def solve1(multA, multAT, b, x, eps=1e-6, max_iters=100):
+def solve1(multA, multAT, b, x, x_star, eps=1e-6, max_iters=100):
     """
     Solve the system.
     """
 
+    rho = np.zeros(max_iters).astype(np.complex128)
+    err = np.zeros(max_iters).astype(np.float64)
+
     r = b - multA(x)
-    r_hat = r
-    rho = np.zeros(max_iters).astype(np.float32)
-    rho[0] = 1
-    p = np.zeros_like(r)
-    p_hat = np.zeros_like(r)
+    r_star = b - multAT(x_star)
+    p = r * 1
+    p_star = r_star * 1
 
-    term_val = eps**2 * np.dot(b, b)
-    for k in range(1, max_iters):
-        print k, np.dot(r, r), term_val
-        rho[k] = np.dot(r_hat, r)
-        if np.dot(r, r) < term_val:
-            return x, rho[:k+1]
-        beta = rho[k] / rho[k-1]
-        p = r + beta * p
-        p_hat = r_hat + beta * p_hat
-        v = multA(p)
-        alpha = rho[k] / np.dot(p_hat, v)
+    term_val = eps * np.sqrt(np.abs(ga.dot(b, b).get()))
+    print 'Termination error value:', term_val
+    for k in range(max_iters):
+        err[k] = np.sqrt(np.abs(ga.dot(r, r).get()))
+        if err[k] < term_val:
+            return x, err[:k+1]
+        
+        rho[k] = ga.dot(r_star, r).get()
+        alpha = rho[k] / ga.dot(p_star, multA(p)).get()
+
         x = x + alpha * p
-        r = r - alpha * v
-        r_hat = r_hat - alpha * multAT(p_hat)
-    return x, rho
+        x_star = x_star + alpha * p_star
 
+        r = r - alpha * multA(p)
+        r_star = r_star - alpha * multAT(p_star)
+
+        beta = ga.dot(r_star, r).get() / rho[k]
+
+        p = r + beta * p
+        p_star = r_star + beta * p_star
+
+    return x, err 
 def solve(multA, multAT, b, x, max_iters=100):
     """
     Solve the system.

@@ -1,13 +1,12 @@
 import numpy as np
-from solvers import bicg
-import matplotlib.pyplot as plt
-import stretched_coords
+from my_math import bicg
+from my_phys import stretched_coords
 
 
-N = 10
+N = 100 
 omega = 0.3
-s0 = stretched_coords.get_coeffs(N, 0.0, 2, omega)
-s1 = stretched_coords.get_coeffs(N, 0.5, 2, omega)
+s0 = stretched_coords.get_coeffs(N, 0.0, 10, omega)
+s1 = stretched_coords.get_coeffs(N, 0.5, 10, omega)
 A = np.zeros((N, N))
 for k in range(N):
     A[k,k] = 1
@@ -17,34 +16,33 @@ for k in range(N):
         A[k,k-1] = -1
 A1 = np.dot(np.diag(s0), A)
 A2 = np.dot(np.diag(s1), A.T)
-A = np.dot(A2, A1) - omega**2 * (1 - 0.j) * np.eye(N)
-# A = np.dot(A.T, A) - omega**2 * (1 - 0.j) * np.eye(N)
-def mA(x):
-    return np.dot(A, x) 
+A = np.dot(A2, A1) - omega**2 * np.eye(N)
 
-def mAT(x):
-    return np.dot(A.T, x)
+def mA(x, y):
+    y[:] = np.dot(A, x) 
+    return
+
+def mAT(x, y):
+    y[:] = np.dot(A.T, x)
+    return
 
 b = np.zeros(N).astype(np.complex128)
-b[N/2+2] = 1 + 0j
-b = np.arange(N).astype(np.complex128)
-# print mA(b)
-print mAT(b)
+b[N/2] = 1 + 0j
 
 # print mAT(b)
 
-# # Find "exact" solution.
-# x = np.linalg.solve(A, b)
-# print 'error from "exact" solution', np.linalg.norm(mA(x) - b)
-# 
-# # Solve using bi-cg.
-# x = np.zeros_like(b)
-# x, err = bicg.solve2(mA, mAT, b, b, x, x, max_iters=1000)
-# print len(err), 'iterations'
-# print 'ending in:'
-# for err_val in err[-5:]:
-#     print err_val
-# 
-# print 'error is', np.linalg.norm(mA(x) - b)
+# Find "exact" solution.
+x = np.linalg.solve(A, b)
+print 'error from "exact" solution', np.linalg.norm(np.dot(A, x) - b)
+
+# Solve using bi-cg.
+x = np.zeros_like(b)
+x, err  = bicg.solve_asymm(mA, mAT, b)
+print len(err), 'iterations'
+print 'ending in:'
+for err_val in err[-5:]:
+    print err_val
+
+print 'error is', np.linalg.norm(np.dot(A, x) - b)
 # plt.plot(np.abs(x), 'b.-')
 # plt.show()

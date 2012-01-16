@@ -35,18 +35,17 @@ d1 = grid_traverse.get_function(shape, code1.render(zz=shape[2]), \
             (cuda_type, 'v'), (cuda_type, 'u'))
 d2 = grid_traverse.get_function(shape, code2.render(zz=shape[2]), \
             (cuda_type, 'v'), (cuda_type, 'u'))
-u = ga.zeros(shape, np.complex128)
-u0 = np.zeros(shape).astype(np.complex128)
-u0[0,0,shape[2]/2] = 1 + 0j;
-u.set(u0)
-v = ga.zeros_like(u)
+b = ga.zeros(shape, np.complex128)
+b0 = np.zeros(shape).astype(np.complex128)
+b0[0,0,shape[2]/2] = 1 + 0j;
+b.set(b0)
 
 # d1(v.gpudata, ds0.gpudata, u.gpudata, block=shape[::-1], grid=(1,1))
 # print v.get()
 # d2(v.gpudata, ds1.gpudata, u.gpudata, block=shape[::-1], grid=(1,1))
 # print v.get()
 
-def multA(u):
+def multA(u, y):
     v0 = ga.empty_like(u)
     v1 = ga.empty_like(u)
     # d1(v0.gpudata, u.gpudata, block=shape[::-1], grid=(1,1))
@@ -55,17 +54,40 @@ def multA(u):
     d2(v1, v0)
     # d2(v1.gpudata, v0.gpudata, block=shape[::-1], grid=(1,1))
     v1 = v1 * ds1
-    return v1 - omega**2 * u
+    y.set((v1 - omega**2 * u).get())
+    return
 
-def multAT(u):
+def multAT(u, y):
     v0 = ga.empty_like(u)
     v1 = ga.empty_like(u)
     # d1(v0.gpudata, (u * ds1).gpudata, block=shape[::-1], grid=(1,1))
     d1(v0, u * ds1)
     # d2(v1.gpudata, (v0 * ds0).gpudata, block=shape[::-1], grid=(1,1))
     d2(v1, v0 * ds0)
-    return v1 - omega**2 * u
+    y.set((v1 - omega**2 * u).get())
+    return
 
-x, err = bicg.solve1(multA, multAT, u, v, v*1, max_iters=1000)
+def my_dot(x, y):
+    return ga.dot(x, y).get()
+ 
+def my_axby(a, x, b, y):
+    y.set(y.mul_add(b, x, a).get())
+    return
+
+def my_copy(x):
+    y = ga.empty_like(x)
+    y.set(x.get())
+    return y
+
+print my_dot(b, b)
+c = my_copy(b)
+my_axby(1, b, 2, c)
+print my_dot(b, c)
+print my_dot(c, c)
+# print my_dot(b,b)
+# print my_dot(b, my_copy(b))
+# x, err = bicg.solve1(multA, multAT, u, v, v*1, max_iters=1000)
+x, err = bicg.solve_asymm(multA, multAT, b, \
+                dot=my_dot, axby=my_axby, copy=my_copy)
 print err.size, 'iterations ending with', err[-3:]
 y = x.get()

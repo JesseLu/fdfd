@@ -1,4 +1,3 @@
-import pycuda.gpuarray as ga
 import numpy as np
 
 def _axby(a, x, b, y):
@@ -15,14 +14,18 @@ def solve_asymm(multA, multAT, b, x=None, x_hat=None, \
     multA -- multA(x) calculates A * x and returns the result.
     multAT -- multAT(x) calculates A^T * x and returns the result.
     b -- the problem to be solved is A * x = b.
+
+    Keyword variables:
     x -- initial guess of x, default value is 0.
     x_hat -- initial guess for x_hat, default value is 0.
-    dot -- dot(x, y) calculates xT * y and returns the result.
+    dot -- dot(x, y) calculates xT * y and returns the result, 
+           default: numpy.dot().
     axby -- axby(a, x, b, y) calculates a * x + b * y and 
-        stores the result in y.
-    copy -- copy(x) returns a copy of x.
-    eps -- the termination error is determined by eps * ||b|| (2-norm).
-    max_iters -- maximum number of iterations allowed.
+            stores the result in y, default y[:] = a * x + b * y.
+    copy -- copy(x) returns a copy of x, default numpy.copy().
+    eps -- the termination error is determined by eps * ||b|| (2-norm),
+           default 1e-6.
+    max_iters -- maximum number of iterations allowed, default 1000.
 
     Output variables:
     x -- the apprximate answer of A * x = b.
@@ -30,6 +33,11 @@ def solve_asymm(multA, multAT, b, x=None, x_hat=None, \
 
     Examples:
     """
+
+    # TODO
+    # ----
+    # *   Check for breakdown condition.
+    # *   Notify user if we weren't able to beat term_err.
 
     if x is None: # Default value of x is 0.
         x = copy(b)
@@ -65,7 +73,7 @@ def solve_asymm(multA, multAT, b, x=None, x_hat=None, \
 
         # Compute error and check termination condition.
         err[k] = np.sqrt(np.abs(dot(r, r)))
-        if err[k] < term_val:
+        if err[k] < term_err:
             break
         
         # rho = r_hatT * r.
@@ -96,75 +104,3 @@ def solve_asymm(multA, multAT, b, x=None, x_hat=None, \
     # Return the answer, and the progress we made.
     return x, err[:k+1] 
         
-
-def solve2(multA, multAT, b, b_star, x, x_star, eps=1e-6, max_iters=100):
-    """
-    Solve the system.
-    """
-
-    rho = np.zeros(max_iters).astype(np.complex128)
-    err = np.zeros(max_iters).astype(np.float64)
-
-    r = b - multA(x)
-    r_star = b_star - multAT(x_star)
-    p = r
-    p_star = r_star
-
-    term_val = eps * np.linalg.norm(b)
-    print 'Termination error value:', term_val
-    for k in range(max_iters):
-        err[k] = np.linalg.norm(r)
-        if err[k] < term_val:
-            return x, err[:k+1]
-        
-        rho[k] = np.dot(r_star, r)
-        alpha = rho[k] / np.dot(p_star, multA(p))
-
-        x = x + alpha * p
-        x_star = x_star + alpha * p_star
-
-        r = r - alpha * multA(p)
-        r_star = r_star - alpha * multAT(p_star)
-
-        beta = np.dot(r_star, r) / rho[k]
-
-        p = r + beta * p
-        p_star = r_star + beta * p_star
-
-    return x, err 
-
-def solve1(multA, multAT, b, x, x_star, eps=1e-6, max_iters=100):
-    """
-    Solve the system.
-    """
-
-    rho = np.zeros(max_iters).astype(np.complex128)
-    err = np.zeros(max_iters).astype(np.float64)
-
-    r = b - multA(x)
-    r_star = b - multAT(x_star)
-    p = r * 1
-    p_star = r_star * 1
-
-    term_val = eps * np.sqrt(np.abs(ga.dot(b, b).get()))
-    print 'Termination error value:', term_val
-    for k in range(max_iters):
-        err[k] = np.sqrt(np.abs(ga.dot(r, r).get()))
-        if err[k] < term_val:
-            return x, err[:k+1]
-        
-        rho[k] = ga.dot(r_star, r).get()
-        alpha = rho[k] / ga.dot(p_star, multA(p)).get()
-
-        x = x + alpha * p
-        x_star = x_star + alpha * p_star
-
-        r = r - alpha * multA(p)
-        r_star = r_star - alpha * multAT(p_star)
-
-        beta = ga.dot(r_star, r).get() / rho[k]
-
-        p = r + beta * p
-        p_star = r_star + beta * p_star
-
-    return x, err 

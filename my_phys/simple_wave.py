@@ -2,7 +2,6 @@ from jinja2 import Environment, PackageLoader
 from my_cs import grid_traverse
 from my_cs import dist_grid as dg
 import stretched_coords
-from pycuda import gpuarray as ga
 import numpy as np
 # Implements multA, multAT, dot, axby, and copy for a simple 1D wave equation.
 

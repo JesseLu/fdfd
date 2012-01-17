@@ -20,14 +20,13 @@ def get_function(shape, code, *params):
     Examples:
     # Form a simple cuda function that doubles elements of an array.
     import numpy as np
-    from pycuda import gpuarray as ga
-    from my_cs import grid_traverse
-    x = ga.zeros((2,3,4), np.float32) + 1
+    from my_cs import grid_traverse, dist_grid
+    x = dist_grid.Grid(np.ones(2,3,4).astype(np.float32))
     double_it = grid_traverse.get_function( (2,3,4), 
                                             'x(0,0,0) *= 2', 
                                             ('float', 'x'))
     double_it(x)
-        print x.get()
+    print x.ary.get()
     """
     # Get the template and render it using jinja2.
     template = jinja_env.get_template('traverse.cu') 
@@ -43,23 +42,9 @@ def get_function(shape, code, *params):
     # the block and grid shapes.
     # TODO: allow keyword arguments to be passed to the pycuda function call.
     # TODO: allow for default optimized block and grid shape function call.
-    def wrapped_fun(*gpu_arrays):
-        fun(*[ga.gpudata for ga in gpu_arrays], block=shape[::-1], grid=(1,1))
+    def wrapped_fun(*grids):
+        fun(*[grid.g.gpudata for grid in grids], block=shape[::-1], grid=(1,1))
 
     return wrapped_fun
 
     
-
-def fd_kernel(function_name, cuda_type, fields, shape, source):
-    env = Environment(loader=PackageLoader(__name__, 'templates'))
-    src_macros = env.get_template('my_cuda_macros.cu')
-    src_complex = env.get_template('my_complex_macros.cu')
-    src_update = env.get_template('update.cu')
-
-    src = src_macros.render() + src_complex.render() + \
-        src_update.render(  function_name=function_name, \
-                            dims=shape, \
-                            cuda_type=cuda_type, \
-                            fields=fields, \
-                            code=source)
-    return src

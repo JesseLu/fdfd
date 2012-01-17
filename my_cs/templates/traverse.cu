@@ -35,6 +35,10 @@
 #define {{ param[1] }}(sx,sy,sz) {{ param[1] }}[MY_OFFSET(sx,sy,sz)]
 {%- endfor %} 
 
+{%- for param in params%} 
+#define {{ param[1] }}_abs(sx,sy,sz) {{ param[1] }}[MY_OFFSET(sx-i,sy-j,sz-k)]
+{%- endfor %} 
+
 __global__ void traverse(
     {#- Add the fields as input parameters to the function. -#}
     {%- for param in params -%} 

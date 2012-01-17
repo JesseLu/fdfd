@@ -10,17 +10,24 @@ import numpy as np
 # Load the jinja environment.
 jinja_env = Environment(loader=PackageLoader(__name__, 'templates'))
 
-def get_ops1(shape, omega, b):
-    ds0 = dg.Grid(stretched_coords.get_coeffs(shape[2], 0.0, 10, omega))
-    ds1 = dg.Grid(stretched_coords.get_coeffs(shape[2], 0.5, 10, omega))
-    cuda_type = 'pycuda::complex<double>'
+def get_ops(shape, omega, b, t_pml=10):
+    sc0 = dg.Grid(stretched_coords.get_coeffs(shape[2], 0.0, t_pml, omega).astype(np.complex128))
+    sc1 = dg.Grid(stretched_coords.get_coeffs(shape[2], 0.5, t_pml, omega).astype(np.complex128))
+
+    if b.dtype.type is np.complex128:
+        cuda_type = 'pycuda::complex<double>'
+    elif b.dtype.type is np.complex64:
+        cuda_type = 'pycuda::complex<float>'
+    else:
+        print 'error on data type of b'
+
 
     mA_func = grid_traverse.get_function(shape, \
         jinja_env.get_template('simplewave_multA.cu').render(w2=omega**2, zz=shape[2]), \
         (cuda_type, 's0'), (cuda_type, 's1'), \
         (cuda_type, 'u'), (cuda_type, 'v'))
     def multA(x, y):
-        mA_func(ds0.ary, ds1.ary, x.ary, y.ary)
+        mA_func(sc0, sc1, x, y)
         return
 
     mAT_func = grid_traverse.get_function(shape, \
@@ -28,7 +35,7 @@ def get_ops1(shape, omega, b):
         (cuda_type, 's0'), (cuda_type, 's1'), \
         (cuda_type, 'u'), (cuda_type, 'v'))
     def multAT(x, y):
-        mAT_func(ds0.ary, ds1.ary, x.ary, y.ary)
+        mAT_func(sc0, sc1, x, y)
         return
 
     def dot(x, y):
@@ -41,45 +48,6 @@ def get_ops1(shape, omega, b):
         return x.dup()
     
     return dg.Grid(b), multA, multAT, \
-            {   'dot': dot, \
-                'axby': axby, \
-                'copy': copy}
-
-def get_ops(shape, omega):
-    ds0 = ga.to_gpu(stretched_coords.get_coeffs(shape[2], 0.0, 10, omega))
-    ds1 = ga.to_gpu(stretched_coords.get_coeffs(shape[2], 0.5, 10, omega))
-    cuda_type = 'pycuda::complex<double>'
-    const = 'test'
-
-    mA_func = grid_traverse.get_function(shape, \
-        jinja_env.get_template('simplewave_multA.cu').render(w2=omega**2, zz=shape[2]), \
-        (cuda_type, 's0'), (cuda_type, 's1'), \
-        (cuda_type, 'u'), (cuda_type, 'v'))
-    def multA(x, y):
-        mA_func(ds0, ds1, x, y)
-        return
-
-    mAT_func = grid_traverse.get_function(shape, \
-        jinja_env.get_template('simplewave_multAT.cu').render(w2=omega**2, zz=shape[2]), \
-        (cuda_type, 's0'), (cuda_type, 's1'), \
-        (cuda_type, 'u'), (cuda_type, 'v'))
-    def multAT(x, y):
-        mAT_func(ds0, ds1, x, y)
-        return
-
-    def dot(x, y):
-        return ga.dot(x, y).get()
-     
-    def axby(a, x, b, y):
-        y.set(y.mul_add(b, x, a).get())
-        return
-
-    def copy(x):
-        y = ga.empty_like(x)
-        y.set(x.get())
-        return y
-
-    return multA, multAT, \
             {   'dot': dot, \
                 'axby': axby, \
                 'copy': copy}

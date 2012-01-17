@@ -16,7 +16,7 @@ b[0,0,shape[2]/2] = 1 + 0j;
 # b = ga.to_gpu(b)
 # b.set(np.arange(shape[2]).astype(np.complex128))
 # y = ga.zeros_like(b) 
-b, multA, multAT, ops = simple_wave.get_ops1(shape, omega, b)
+b, multA, multAT, ops = simple_wave.get_ops(shape, omega, b)
 # multAT(b, y)
 # print y.get()
 # multA(b, y)

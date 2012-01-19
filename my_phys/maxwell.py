@@ -40,7 +40,7 @@ def get_ops(omega, b):
     shape = b[0].shape
     cuda_type = 'pycuda::complex<double>'
     field_names = ('Ex', 'Ey', 'Ez', 'Ax', 'Ay', 'Az')
-    mA_func = grid_traverse.get_function(shape, \
+    mA_func = grid_traverse.TraverseKernel(shape, \
         jinja_env.get_template('maxwell_multA.cu').\
             render(w2=omega**2, dims=shape, type=cuda_type), \
         *[(cuda_type, name) for name in field_names])

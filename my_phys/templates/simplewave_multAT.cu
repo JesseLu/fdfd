@@ -10,6 +10,6 @@
             next = 1;
 
         // Update equation.
-        v(0,0,0) = -(s0(0,0,next) * (s1(0,0,next) * u(0,0,next) - s1(0,0,0) * u(0,0,0)) - 
-                s0(0,0,0) * (s1(0,0,0) * u(0,0,0) - s1(0,0,prev) * u(0,0,prev))) - 
+        v(0,0,0) = -(s0__f[k+next] * (s1__f[k+next] * u(0,0,next) - s1__f[k] * u(0,0,0)) - 
+                s0__f[k] * (s1__f[k] * u(0,0,0) - s1__f[k+prev] * u(0,0,prev))) - 
                 double({{ w2 }}) * u(0,0,0); 

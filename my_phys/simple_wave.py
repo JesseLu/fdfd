@@ -21,17 +21,17 @@ def get_ops(shape, omega, b, t_pml=10):
         print 'error on data type of b'
 
 
-    mA_func = grid_traverse.get_function(shape, \
+    mA_func = grid_traverse.TraverseKernel(shape, \
         jinja_env.get_template('simplewave_multA.cu').render(w2=omega**2, zz=shape[2]), \
-        (cuda_type, 's0'), (cuda_type, 's1'), \
+        (cuda_type, 's0__f'), (cuda_type, 's1__f'), \
         (cuda_type, 'u'), (cuda_type, 'v'))
     def multA(x, y):
         mA_func(sc0, sc1, x, y)
         return
 
-    mAT_func = grid_traverse.get_function(shape, \
+    mAT_func = grid_traverse.TraverseKernel(shape, \
         jinja_env.get_template('simplewave_multAT.cu').render(w2=omega**2, zz=shape[2]), \
-        (cuda_type, 's0'), (cuda_type, 's1'), \
+        (cuda_type, 's0__f'), (cuda_type, 's1__f'), \
         (cuda_type, 'u'), (cuda_type, 'v'))
     def multAT(x, y):
         mAT_func(sc0, sc1, x, y)

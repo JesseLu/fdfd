@@ -2,6 +2,7 @@ from jinja2 import Environment, PackageLoader
 from my_cs import grid_traverse
 from my_cs import dist_grid as dg
 import numpy as np
+import stretched_coords
 # Implements multA, multAT, dot, axby, and copy for Maxwell's EM equations (3D).
 
 # Execute when module is loaded.
@@ -25,7 +26,7 @@ class VecField:
         for k in range(len(self.f)):
             self.f[k].aby(a, b, v.f[k])
 
-def get_ops(omega, b):
+def get_ops(omega, b, t_pml=10):
     """ define the operations """
 
     def copy(x):
@@ -39,7 +40,15 @@ def get_ops(omega, b):
 
     shape = b[0].shape
     cuda_type = 'pycuda::complex<double>'
-    field_names = ('Ex', 'Ey', 'Ez', 'Ax', 'Ay', 'Az')
+    field_names = ('Ex', 'Ey', 'Ez', 'Ax', 'Ay', 'Az', \
+                    'sx0__f', 'sy0__f', 'sz0__f', 'sx1__f', 'sy1__f', 'sz1__f')
+    sc_pml_0 = VecField(\
+        *[stretched_coords.get_coeffs(len, 0.0, t_pml, omega).astype(np.complex128) \
+        for len in shape])
+    sc_pml_1 = VecField(\
+        *[stretched_coords.get_coeffs(len, 0.5, t_pml, omega).astype(np.complex128) \
+        for len in shape])
+
     mA_func = grid_traverse.TraverseKernel(shape, \
         jinja_env.get_template('maxwell_multA.cu').\
             render(w2=omega**2, dims=shape, type=cuda_type), \

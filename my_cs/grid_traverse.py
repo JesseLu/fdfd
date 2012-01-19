@@ -28,8 +28,9 @@ class TraverseKernel():
         template = jinja_env.get_template('traverse.cu') 
         cuda_source = template.render(  params=params, \
                                         dims=self.shape, \
-                                        loop_code=code)
-
+                                        loop_code=code, \
+                                        flat_tag='_f')
+        print cuda_source
         # Compile the code into a callable cuda function.
         mod = compiler.SourceModule(cuda_source)
         self.fun = mod.get_function('traverse')
@@ -45,9 +46,6 @@ def _get_shapes(shape):
     block_shapes = (1, 16, 16)
     grid_shapes = (1, int(np.ceil(shape[1]/block_shapes[1]) + 1), \
                     int(np.ceil(shape[2]/block_shapes[2]) + 1))
-    print block_shapes, grid_shapes
-    print grid_shapes[2:0:-1]
-    print type(block_shapes[2]), type(grid_shapes[2])
     return block_shapes, grid_shapes
 
     

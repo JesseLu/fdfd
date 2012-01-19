@@ -31,19 +31,15 @@
 // Macros to access fields using the field(i,j,k) format,
 // where sx, sy, and sz are RELATIVE offsets in the x, y, and z directions
 // respectively.
-{%- for param in params%} 
-#define {{ param[1] }}(sx,sy,sz) {{ param[1] }}[MY_OFFSET(sx,sy,sz)]
-{%- endfor %} 
-
-{%- for param in params%} 
-#define {{ param[1] }}_abs(sx,sy,sz) {{ param[1] }}[MY_OFFSET(sx-i,sy-j,sz-k)]
+{%- for p in params if flat_tag not in p[1] %}
+#define {{ p[1] }}(sx,sy,sz) {{ p[1] }}[MY_OFFSET(sx,sy,sz)]
 {%- endfor %} 
 
 __global__ void traverse(
     {#- Add the fields as input parameters to the function. -#}
-    {%- for param in params -%} 
+    {%- for p in params -%} 
         {% if not loop.first -%}, {% endif -%} 
-        {{ param[0] }} *{{ param[1] }}
+        {{ p[0] }} *{{ p[1] }}
     {%- endfor -%}) 
 {
     // Set the index variables. Only i will change, since we only traverse
@@ -54,8 +50,8 @@ __global__ void traverse(
 
     // Set the field pointers to the appropriate location 
     // for the current thread.
-    {%- for param in params %} 
-    {{ param[1] }} += MY_OFFSET(i,j,k);
+    {%- for p in params if flat_tag not in p[1] %}
+    {{ p[1] }} += MY_OFFSET(i,j,k);
     {%- endfor %} 
 
     // User-defined "pre-loop" code.
@@ -67,8 +63,8 @@ __global__ void traverse(
 
         // Increment the pointers, in order to scan through the entire grid
         // in the x-direction.
-        {%- for param in params %} 
-        {{ param[1] }} += MY_OFFSET(txx,0,0);
+        {%- for p in params if flat_tag not in p[1] %}
+        {{ p[1] }} += MY_OFFSET(txx,0,0);
         {%- endfor %} 
     }
 

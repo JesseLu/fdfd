@@ -3,9 +3,11 @@ import numpy as np
 def _axby(a, x, b, y):
     """Default axby routine."""
     y[:] = a * x + b * y
-    return
 
-def solve_asymm(multA, multAT, b, x=None, x_hat=None, \
+def _nochange(x):
+    _axby(1, x, 0, y)
+
+def solve_asymm(b, x=None, x_hat=None, multA=_nochange, multAT=_nochange, 
                 dot=np.dot, axby=_axby, copy=np.copy, \
                 eps=1e-6, max_iters=1000):
     """Bi-conjugate gradient solve of square, non-symmetric system.

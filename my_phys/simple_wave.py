@@ -46,7 +46,9 @@ def get_ops(shape, omega, b, t_pml=10):
     def copy(x):
         return x.dup()
     
-    return dg.Grid(b), multA, multAT, \
-            {   'dot': dot, \
+    return dg.Grid(b), \
+            {   'multA': multA, \
+                'multAT': multAT, \
+                'dot': dot, \
                 'axby': axby, \
                 'copy': copy}

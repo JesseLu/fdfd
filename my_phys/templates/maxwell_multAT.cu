@@ -31,18 +31,54 @@
             else
                 kp = 1;
 
+            {{ type }} Ex_000 = Ex(0,0,0);
+            {{ type }} Ex_00p = Ex(0,0,kp);
+            {{ type }} Ex_n0p = Ex(in,0,kp);
+            {{ type }} Ex_n00 = Ex(in,0,0);
+            {{ type }} Ex_00n = Ex(0,0,kn);
+            {{ type }} Ex_0p0 = Ex(0,jp,0);
+            {{ type }} Ex_np0 = Ex(in,jp,0);
+            {{ type }} Ex_0n0 = Ex(0,jn,0);
+
+            {{ type }} Ey_000 = Ey(0,0,0);
+            {{ type }} Ey_00p = Ey(0,0,kp);
+            {{ type }} Ey_0n0 = Ey(0,jn,0);
+            {{ type }} Ey_0np = Ey(0,jn,kp);
+            {{ type }} Ey_00n = Ey(0,0,kn);
+            {{ type }} Ey_p00 = Ey(ip,0,0);
+            {{ type }} Ey_n00 = Ey(in,0,0);
+            {{ type }} Ey_pn0 = Ey(ip,jn,0);
+
+            {{ type }} Ez_000 = Ez(0,0,0);
+            {{ type }} Ez_0p0 = Ez(0,jp,0);
+            {{ type }} Ez_0n0 = Ez(0,jn,0);
+            {{ type }} Ez_00n = Ez(0,0,kn);
+            {{ type }} Ez_0pn = Ez(0,jp,kn);
+            {{ type }} Ez_p00 = Ez(ip,0,0);
+            {{ type }} Ez_n00 = Ez(in,0,0);
+            {{ type }} Ez_p0n = Ez(ip,0,kn);
+
             // Update equation.
-            {{ type }} Hx_0 =   sz1__f[k] * (Ey(0,0,0) - Ey(0,0,kp)) - 
-                                sy1__f[j] * (Ez(0,0,0) - Ez(0,jp,0));
-            {{ type }} Hx_jn =  sz1__f[k] * (Ey(0,jn,0) - Ey(0,jn,kp)) - 
-                                sy1__f[j] * (Ez(0,jn,0) - Ez(0,0,0));
-            {{ type }} Hx_kn = (Ey(0,0,kn) - Ey(0,0,0)) - (Ez(0,0,kn) - Ez(0,jp,kn));
-            {{ type }} Hy_0 = (Ez(0,0,0) - Ez(ip,0,0)) - (Ex(0,0,0) - Ex(0,0,kp));
-            {{ type }} Hy_in = (Ez(in,0,0) - Ez(0,0,0)) - (Ex(in,0,0) - Ex(in,0,kp));
-            {{ type }} Hy_kn = (Ez(0,0,kn) - Ez(ip,0,kn)) - (Ex(0,0,kn) - Ex(0,0,0));
-            {{ type }} Hz_0 = (Ex(0,0,0) - Ex(0,jp,0)) - (Ey(0,0,0) - Ey(ip,0,0));
-            {{ type }} Hz_in = (Ex(in,0,0) - Ex(in,jp,0)) - (Ey(in,0,0) - Ey(0,0,0));
-            {{ type }} Hz_jn = (Ex(0,jn,0) - Ex(0,0,0)) - (Ey(0,jn,0) - Ey(ip,jn,0));
+            {{ type }} Hx_0 =   sz0_f[k] * (Ey_000 - Ey_00p) - 
+                                sy0_f[j] * (Ez_000 - Ez_0p0);
+            {{ type }} Hx_jn =  sz0_f[k] * (Ey_0n0 - Ey_0np) - 
+                                sy0_f[j+jn] * (Ez_0n0 - Ez_000);
+            {{ type }} Hx_kn =  sz0_f[k+kn] * (Ey_00n - Ey_000) - 
+                                sy0_f[j] * (Ez_00n - Ez_0pn);
+
+            {{ type }} Hy_0 =   sx0_f[i] * (Ez_000 - Ez_p00) - 
+                                sz0_f[k] * (Ex_000 - Ex_00p);
+            {{ type }} Hy_in =  sx0_f[i+in] * (Ez_n00 - Ez_000) - 
+                                sz0_f[k] * (Ex_n00 - Ex_n0p);
+            {{ type }} Hy_kn =  sx0_f[i] * (Ez_00n - Ez_p0n) - 
+                                sz0_f[k+kn] * (Ex_00n - Ex_000);
+
+            {{ type }} Hz_0 =   sy0_f[j] * (Ex_000 - Ex_0p0) - 
+                                sx0_f[i] * (Ey_000 - Ey_p00);
+            {{ type }} Hz_in =  sy0_f[j] * (Ex_n00 - Ex_np0) - 
+                                sx0_f[i+in] * (Ey_n00 - Ey_000);
+            {{ type }} Hz_jn =  sy0_f[j+jn] * (Ex_0n0 - Ex_000) - 
+                                sx0_f[i] * (Ey_0n0 - Ey_pn0);
 
             Ax(0,0,0) = (Hz_0 - Hz_jn) - (Hy_0 - Hy_kn) - {{ w2 }} * Ex(0,0,0);
             Ay(0,0,0) = (Hx_0 - Hx_kn) - (Hz_0 - Hz_in) - {{ w2 }} * Ey(0,0,0);

@@ -10,10 +10,10 @@ b[1][15,2,15] = 1.
 
 import pycuda.autoinit
 ops, b = maxwell.get_ops(omega, b)
-x, err = bicg.solve_asymm(b, max_iters=10000, **ops)
+x, err = bicg.solve_asymm(b, max_iters=200, **ops)
 print err.size, 'iterations ending with', err[-3:]
 
-v = 0.1
-plt.imshow(np.real(np.squeeze(x.f[1].g.get()[:,2,:])), \
-        cmap=plt.cm.jet, vmin=-v, vmax=v, interpolation='nearest')
-plt.show()
+# v = 0.1
+# plt.imshow(np.real(np.squeeze(x.f[1].g.get()[:,2,:])), \
+#         cmap=plt.cm.jet, vmin=-v, vmax=v, interpolation='nearest')
+# plt.show()

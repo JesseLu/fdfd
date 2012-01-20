@@ -50,7 +50,7 @@ def get_ops(omega, b, t_pml=10):
         for len in shape])
 
     mA_func = grid_traverse.TraverseKernel(shape, \
-        jinja_env.get_template('maxwell_multA.cu').\
+        jinja_env.get_template('maxwell_nopml_multA.cu').\
             render(w2=omega**2, dims=shape, type=cuda_type), \
         *[(cuda_type, name) for name in field_names])
     def multA(x, y):

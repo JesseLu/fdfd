@@ -59,28 +59,34 @@
             {{ type }} Ez_p0n = Ez(ip,0,kn);
 
             // Update equation.
-            {{ type }} Hx_0 =   sz0_f[k] * (Ey_000 - Ey_00p) - 
-                                sy0_f[j] * (Ez_000 - Ez_0p0);
-            {{ type }} Hx_jn =  sz0_f[k] * (Ey_0n0 - Ey_0np) - 
-                                sy0_f[j+jn] * (Ez_0n0 - Ez_000);
-            {{ type }} Hx_kn =  sz0_f[k+kn] * (Ey_00n - Ey_000) - 
-                                sy0_f[j] * (Ez_00n - Ez_0pn);
+            {{ type }} Hx_0 =   (sz0_f[k] * Ey_000 - sz0_f[k+kp] * Ey_00p) - 
+                                (sy0_f[j] * Ez_000 - sy0_f[j+jp] * Ez_0p0);
+            {{ type }} Hx_jn =  (sz0_f[k] * Ey_0n0 - sz0_f[k+kp] * Ey_0np) - 
+                                (sy0_f[j+jn] * Ez_0n0 - sy0_f[j] * Ez_000);
+            {{ type }} Hx_kn =  (sz0_f[k+kn] * Ey_00n - sz0_f[k] * Ey_000) - 
+                                (sy0_f[j] * Ez_00n - sy0_f[j+jp] * Ez_0pn);
 
-            {{ type }} Hy_0 =   sx0_f[i] * (Ez_000 - Ez_p00) - 
-                                sz0_f[k] * (Ex_000 - Ex_00p);
-            {{ type }} Hy_in =  sx0_f[i+in] * (Ez_n00 - Ez_000) - 
-                                sz0_f[k] * (Ex_n00 - Ex_n0p);
-            {{ type }} Hy_kn =  sx0_f[i] * (Ez_00n - Ez_p0n) - 
-                                sz0_f[k+kn] * (Ex_00n - Ex_000);
+            {{ type }} Hy_0 =   (sx0_f[i] * Ez_000 - sx0_f[i+ip] * Ez_p00) - 
+                                (sz0_f[k] * Ex_000 - sz0_f[k+kp] * Ex_00p);
+            {{ type }} Hy_in =  (sx0_f[i+in] * Ez_n00 - sx0_f[i] * Ez_000) - 
+                                (sz0_f[k] * Ex_n00 - sz0_f[k+kp] * Ex_n0p);
+            {{ type }} Hy_kn =  (sx0_f[i] * Ez_00n - sx0_f[i+ip] * Ez_p0n) - 
+                                (sz0_f[k+kn] * Ex_00n - sz0_f[k] * Ex_000);
 
-            {{ type }} Hz_0 =   sy0_f[j] * (Ex_000 - Ex_0p0) - 
-                                sx0_f[i] * (Ey_000 - Ey_p00);
-            {{ type }} Hz_in =  sy0_f[j] * (Ex_n00 - Ex_np0) - 
-                                sx0_f[i+in] * (Ey_n00 - Ey_000);
-            {{ type }} Hz_jn =  sy0_f[j+jn] * (Ex_0n0 - Ex_000) - 
-                                sx0_f[i] * (Ey_0n0 - Ey_pn0);
+            {{ type }} Hz_0 =   (sy0_f[j] * Ex_000 - sy0_f[j+jp] * Ex_0p0) - 
+                                (sx0_f[i] * Ey_000 - sz0_f[i+ip] * Ey_p00);
+            {{ type }} Hz_in =  (sy0_f[j] * Ex_n00 - sy0_f[j+jp] * Ex_np0) - 
+                                (sx0_f[i+in] * Ey_n00 - sx0_f[i] * Ey_000);
+            {{ type }} Hz_jn =  (sy0_f[j+jn] * Ex_0n0 - sy0_f[j] * Ex_000) - 
+                                (sx0_f[i] * Ey_0n0 - sx0_f[i+ip] * Ey_pn0);
 
-            Ax(0,0,0) = (Hz_0 - Hz_jn) - (Hy_0 - Hy_kn) - {{ w2 }} * Ex(0,0,0);
-            Ay(0,0,0) = (Hx_0 - Hx_kn) - (Hz_0 - Hz_in) - {{ w2 }} * Ey(0,0,0);
-            Az(0,0,0) = (Hy_0 - Hy_in) - (Hx_0 - Hx_jn) - {{ w2 }} * Ez(0,0,0);
+            Ax(0,0,0) = (sy1_f[j] * Hz_0 - sy1_f[j+jn] * Hz_jn) - 
+                        (sz1_f[k] * Hy_0 - sz1_f[k+kp] * Hy_kn) - 
+                        {{ w2 }} * Ex(0,0,0);
+            Ay(0,0,0) = (sz1_f[k] * Hx_0 - sz1_f[k+kn] * Hx_kn) - 
+                        (sx1_f[i] * Hz_0 - sx1_f[i+in] * Hz_in) - 
+                        {{ w2 }} * Ey(0,0,0);
+            Az(0,0,0) = (sx1_f[i] * Hy_0 - sx1_f[i+in] * Hy_in) - 
+                        (sy1_f[j] * Hx_0 - sy1_f[j+jn] * Hx_jn) - 
+                        {{ w2 }} * Ez(0,0,0);
         }

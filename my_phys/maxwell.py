@@ -41,7 +41,7 @@ def get_ops(omega, b, t_pml=10):
     shape = b[0].shape
     cuda_type = 'pycuda::complex<double>'
     field_names = ('Ex', 'Ey', 'Ez', 'Ax', 'Ay', 'Az', \
-                    'sx0__f', 'sy0__f', 'sz0__f', 'sx1__f', 'sy1__f', 'sz1__f')
+                    'sx0_f', 'sy0_f', 'sz0_f', 'sx1_f', 'sy1_f', 'sz1_f')
     sc_pml_0 = VecField(\
         *[stretched_coords.get_coeffs(len, 0.0, t_pml, omega).astype(np.complex128) \
         for len in shape])
@@ -49,16 +49,26 @@ def get_ops(omega, b, t_pml=10):
         *[stretched_coords.get_coeffs(len, 0.5, t_pml, omega).astype(np.complex128) \
         for len in shape])
 
+#     for k in range(3):
+#         print sc_pml_0.f[k].g.shape
     mA_func = grid_traverse.TraverseKernel(shape, \
-        jinja_env.get_template('maxwell_nopml_multA.cu').\
+        jinja_env.get_template('maxwell_multA.cu').\
             render(w2=omega**2, dims=shape, type=cuda_type), \
         *[(cuda_type, name) for name in field_names])
     def multA(x, y):
-        mA_func(x.f[0], x.f[1], x.f[2], y.f[0], y.f[1], y.f[2])
-        return
+        mA_func(x.f[0], x.f[1], x.f[2], \
+                y.f[0], y.f[1], y.f[2], \
+                sc_pml_0.f[0], sc_pml_0.f[1], sc_pml_0.f[2], \
+                sc_pml_1.f[0], sc_pml_1.f[1], sc_pml_1.f[2])
 
+    mAT_func = grid_traverse.TraverseKernel(shape, \
+        jinja_env.get_template('maxwell_multAT.cu').\
+            render(w2=omega**2, dims=shape, type=cuda_type), \
+        *[(cuda_type, name) for name in field_names])
     def multAT(x, y):
-        mA_func(x.f[0], x.f[1], x.f[2], y.f[0], y.f[1], y.f[2])
-        return
+        mAT_func(x.f[0], x.f[1], x.f[2], \
+                y.f[0], y.f[1], y.f[2], \
+                sc_pml_0.f[0], sc_pml_0.f[1], sc_pml_0.f[2], \
+                sc_pml_1.f[0], sc_pml_1.f[1], sc_pml_1.f[2])
 
     return  {'multA': multA, 'multAT': multAT, 'copy': copy, 'dot': dot, 'axby': axby}, VecField(*b)

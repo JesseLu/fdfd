@@ -81,7 +81,7 @@
                                 (sx0_f[i] * Ey_0n0 - sx0_f[i+ip] * Ey_pn0);
 
             Ax(0,0,0) = (sy1_f[j] * Hz_0 - sy1_f[j+jn] * Hz_jn) - 
-                        (sz1_f[k] * Hy_0 - sz1_f[k+kp] * Hy_kn) - 
+                        (sz1_f[k] * Hy_0 - sz1_f[k+kn] * Hy_kn) - 
                         {{ w2 }} * Ex(0,0,0);
             Ay(0,0,0) = (sz1_f[k] * Hx_0 - sz1_f[k+kn] * Hx_kn) - 
                         (sx1_f[i] * Hz_0 - sx1_f[i+in] * Hz_in) - 

@@ -18,8 +18,7 @@ To-do
 Now
 ---
 
-1.  Verify 3D solve (maxwell_test)
-1.  Organize my_physics subpackage.
+1.  Clean everything up and get ready to optimize!
 1.  Write unit_tests for subpackages
 1.  Start basic documentation with pocoo (?).
 

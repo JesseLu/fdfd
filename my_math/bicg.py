@@ -75,7 +75,8 @@ def solve_asymm(b, x=None, x_hat=None, multA=_nochange, multAT=_nochange,
 
         # Compute error and check termination condition.
         err[k] = np.sqrt(np.abs(dot(r, r)))
-        # print k, err[k]
+        print k, err[k]
+
         if err[k] < term_err:
             break
         

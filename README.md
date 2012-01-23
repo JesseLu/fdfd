@@ -26,3 +26,5 @@ Later
 -----
 *   In bicg.py: check for breakdown condition.
 *   In bicg.py: notify user if we were not able to beat term_err.
+*   In dist_grid.py: eliminate unnecessary h-d transfers,
+        test with (xx, yy, 1) sized grids.

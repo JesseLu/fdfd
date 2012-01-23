@@ -49,6 +49,9 @@ def get_ops(omega, b, t_pml=10):
         *[stretched_coords.get_coeffs(len, 0.5, t_pml, omega).astype(np.complex128) \
         for len in shape])
 
+    # print [stretched_coords.get_coeffs(len, 0.5, t_pml, omega).astype(np.complex128) for len in shape]
+
+
     for k in range(3):
         print sc_pml_0.f[k].g.shape
     mA_func = grid_traverse.TraverseKernel(shape, \

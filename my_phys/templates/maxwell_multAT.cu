@@ -30,6 +30,34 @@
                 kp = {{ -(dims[2]-1) }};
             else
                 kp = 1;
+/*
+            {{ type }} Ex_000 = Ex(0,0,0);
+            {{ type }} Ex_00p = Ex(0,0,kp);
+            {{ type }} Ex_n0p = Ex(in,0,kp);
+            {{ type }} Ex_n00 = Ex(in,0,0);
+            {{ type }} Ex_00n = Ex(0,0,kn);
+            {{ type }} Ex_0p0 = Ex(0,jp,0);
+            {{ type }} Ex_np0 = Ex(in,jp,0);
+            {{ type }} Ex_0n0 = Ex(0,jn,0);
+
+            {{ type }} Ey_000 = Ey(0,0,0);
+            {{ type }} Ey_00p = Ey(0,0,kp);
+            {{ type }} Ey_0n0 = Ey(0,jn,0);
+            {{ type }} Ey_0np = Ey(0,jn,kp);
+            {{ type }} Ey_00n = Ey(0,0,kn);
+            {{ type }} Ey_p00 = Ey(ip,0,0);
+            {{ type }} Ey_n00 = Ey(in,0,0);
+            {{ type }} Ey_pn0 = Ey(ip,jn,0);
+
+            {{ type }} Ez_000 = Ez(0,0,0);
+            {{ type }} Ez_0p0 = Ez(0,jp,0);
+            {{ type }} Ez_0n0 = Ez(0,jn,0);
+            {{ type }} Ez_00n = Ez(0,0,kn);
+            {{ type }} Ez_0pn = Ez(0,jp,kn);
+            {{ type }} Ez_p00 = Ez(ip,0,0);
+            {{ type }} Ez_n00 = Ez(in,0,0);
+            {{ type }} Ez_p0n = Ez(ip,0,kn);
+*/
 
             {{ type }} Ex_000 = Ex(0,0,0);
             {{ type }} Ex_00p = Ex(0,0,kp);
@@ -57,7 +85,6 @@
             {{ type }} Ez_p00 = Ez(ip,0,0);
             {{ type }} Ez_n00 = Ez(in,0,0);
             {{ type }} Ez_p0n = Ez(ip,0,kn);
-
             // Update equation.
             {{ type }} Hx_0 =   (sz0_f[k] * Ey_000 - sz0_f[k+kp] * Ey_00p) - 
                                 (sy0_f[j] * Ez_000 - sy0_f[j+jp] * Ez_0p0);
@@ -74,7 +101,7 @@
                                 (sz0_f[k+kn] * Ex_00n - sz0_f[k] * Ex_000);
 
             {{ type }} Hz_0 =   (sy0_f[j] * Ex_000 - sy0_f[j+jp] * Ex_0p0) - 
-                                (sx0_f[i] * Ey_000 - sz0_f[i+ip] * Ey_p00);
+                                (sx0_f[i] * Ey_000 - sx0_f[i+ip] * Ey_p00);
             {{ type }} Hz_in =  (sy0_f[j] * Ex_n00 - sy0_f[j+jp] * Ex_np0) - 
                                 (sx0_f[i+in] * Ey_n00 - sx0_f[i] * Ey_000);
             {{ type }} Hz_jn =  (sy0_f[j+jn] * Ex_0n0 - sy0_f[j] * Ex_000) - 

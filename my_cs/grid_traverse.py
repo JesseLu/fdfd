@@ -30,6 +30,7 @@ class TraverseKernel():
                                         dims=self.shape, \
                                         loop_code=code, \
                                         flat_tag='_f')
+        # print cuda_source
         # Compile the code into a callable cuda function.
         mod = compiler.SourceModule(cuda_source)
         self.fun = mod.get_function('traverse')

@@ -30,34 +30,6 @@
                 kp = {{ -(dims[2]-1) }};
             else
                 kp = 1;
-/*
-            {{ type }} Ex_000 = Ex(0,0,0);
-            {{ type }} Ex_00p = Ex(0,0,kp);
-            {{ type }} Ex_n0p = Ex(in,0,kp);
-            {{ type }} Ex_n00 = Ex(in,0,0);
-            {{ type }} Ex_00n = Ex(0,0,kn);
-            {{ type }} Ex_0p0 = Ex(0,jp,0);
-            {{ type }} Ex_np0 = Ex(in,jp,0);
-            {{ type }} Ex_0n0 = Ex(0,jn,0);
-
-            {{ type }} Ey_000 = Ey(0,0,0);
-            {{ type }} Ey_00p = Ey(0,0,kp);
-            {{ type }} Ey_0n0 = Ey(0,jn,0);
-            {{ type }} Ey_0np = Ey(0,jn,kp);
-            {{ type }} Ey_00n = Ey(0,0,kn);
-            {{ type }} Ey_p00 = Ey(ip,0,0);
-            {{ type }} Ey_n00 = Ey(in,0,0);
-            {{ type }} Ey_pn0 = Ey(ip,jn,0);
-
-            {{ type }} Ez_000 = Ez(0,0,0);
-            {{ type }} Ez_0p0 = Ez(0,jp,0);
-            {{ type }} Ez_0n0 = Ez(0,jn,0);
-            {{ type }} Ez_00n = Ez(0,0,kn);
-            {{ type }} Ez_0pn = Ez(0,jp,kn);
-            {{ type }} Ez_p00 = Ez(ip,0,0);
-            {{ type }} Ez_n00 = Ez(in,0,0);
-            {{ type }} Ez_p0n = Ez(ip,0,kn);
-*/
 
             {{ type }} Ex_000 = Ex(0,0,0);
             {{ type }} Ex_00p = Ex(0,0,kp);
@@ -85,6 +57,7 @@
             {{ type }} Ez_p00 = Ez(ip,0,0);
             {{ type }} Ez_n00 = Ez(in,0,0);
             {{ type }} Ez_p0n = Ez(ip,0,kn);
+
             // Update equation.
             {{ type }} Hx_0 =   (sz0_f[k] * Ey_000 - sz0_f[k+kp] * Ey_00p) - 
                                 (sy0_f[j] * Ez_000 - sy0_f[j+jp] * Ez_0p0);
@@ -109,11 +82,11 @@
 
             Ax(0,0,0) = (sy1_f[j] * Hz_0 - sy1_f[j+jn] * Hz_jn) - 
                         (sz1_f[k] * Hy_0 - sz1_f[k+kn] * Hy_kn) - 
-                        {{ w2 }} * Ex(0,0,0);
+                        {{ w2 }} * Ex_000;
             Ay(0,0,0) = (sz1_f[k] * Hx_0 - sz1_f[k+kn] * Hx_kn) - 
                         (sx1_f[i] * Hz_0 - sx1_f[i+in] * Hz_in) - 
-                        {{ w2 }} * Ey(0,0,0);
+                        {{ w2 }} * Ey_000;
             Az(0,0,0) = (sx1_f[i] * Hy_0 - sx1_f[i+in] * Hy_in) - 
                         (sy1_f[j] * Hx_0 - sy1_f[j+jn] * Hx_jn) - 
-                        {{ w2 }} * Ez(0,0,0);
+                        {{ w2 }} * Ez_000;
         }

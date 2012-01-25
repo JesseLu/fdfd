@@ -8,7 +8,7 @@ def _nochange(x):
     _axby(1, x, 0, y)
 
 def solve_asymm(b, x=None, x_hat=None, multA=_nochange, multAT=_nochange, 
-                dot=np.dot, axby=_axby, copy=np.copy, \
+                norm=np.linalg.norm, dot=np.dot, axby=_axby, copy=np.copy, \
                 eps=1e-6, max_iters=1000):
     """Bi-conjugate gradient solve of square, non-symmetric system.
 
@@ -74,7 +74,7 @@ def solve_asymm(b, x=None, x_hat=None, multA=_nochange, multAT=_nochange,
     for k in range(max_iters):
 
         # Compute error and check termination condition.
-        err[k] = np.sqrt(np.abs(dot(r, r)))
+        err[k] = norm(r)
         print k, err[k]
 
         if err[k] < term_err:

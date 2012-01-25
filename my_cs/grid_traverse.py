@@ -30,7 +30,9 @@ class TraverseKernel():
                                         dims=self.shape, \
                                         loop_code=code, \
                                         flat_tag='_f')
-        # print cuda_source
+        f = open('/tmp/code', 'w')
+        f.write(cuda_source)
+
         # Compile the code into a callable cuda function.
         mod = compiler.SourceModule(cuda_source)
         self.fun = mod.get_function('traverse')
@@ -43,7 +45,7 @@ class TraverseKernel():
                 block=self.block_shapes[::-1], grid=self.grid_shapes[2:0:-1])
 
 def _get_shapes(shape):
-    block_shapes = (1, 16, 16)
+    block_shapes = (1, 1, 20)
     grid_shapes = (1, int(np.ceil(shape[1]/block_shapes[1]) + 1), \
                     int(np.ceil(shape[2]/block_shapes[2]) + 1))
     return block_shapes, grid_shapes
